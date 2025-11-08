@@ -10,6 +10,7 @@
     "db:create": "node database/check-db.js",
     "db:init": "node database/init.js",
     "db:test": "node database/test-connection.js",
+    "db:update-images": "node database/update-images.js",
     "test": "node test-api.js",
     "test:api": "node test-api.js"
   },
