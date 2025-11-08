@@ -18,15 +18,26 @@ const apiCall = async (endpoint, options = {}) => {
 
   try {
     const response = await fetch(url, config);
-    const data = await response.json();
+    
+    // 응답이 JSON이 아닐 수 있으므로 확인
+    let data;
+    const contentType = response.headers.get('content-type');
+    if (contentType && contentType.includes('application/json')) {
+      data = await response.json();
+    } else {
+      const text = await response.text();
+      console.error('JSON이 아닌 응답:', text);
+      throw new Error(`API 응답 오류: ${response.status} ${response.statusText}`);
+    }
 
     if (!response.ok) {
-      throw new Error(data.error?.message || 'API 요청 실패');
+      throw new Error(data.error?.message || data.message || `API 요청 실패: ${response.status}`);
     }
 
     return data;
   } catch (error) {
     console.error('API 호출 오류:', error);
+    console.error('요청 URL:', url);
     throw error;
   }
 };

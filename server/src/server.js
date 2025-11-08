@@ -18,6 +18,7 @@ const corsOptions = {
   origin: process.env.NODE_ENV === 'production' 
     ? [
         'https://coffee-order-app.onrender.com',
+        'https://order-app-frontend-yrru.onrender.com', // 실제 배포된 프론트엔드 URL
         process.env.FRONTEND_URL // 환경 변수로 설정 가능
       ].filter(Boolean)
     : ['http://localhost:3000', 'http://localhost:5173'], // 개발 환경
