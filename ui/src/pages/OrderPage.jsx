@@ -1,57 +1,33 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import MenuCard from '../components/MenuCard';
 import Cart from '../components/Cart';
-import { orderStorage } from '../utils/storage';
+import { menuAPI, orderAPI } from '../utils/api';
 import '../styles/OrderPage.css';
-
-// 메뉴 데이터
-const menuData = [
-  {
-    id: 1,
-    name: '아메리카노(ICE)',
-    price: 4000,
-    description: '시원하고 깔끔한 아이스 아메리카노',
-    image: '/americano-ice.jpg'
-  },
-  {
-    id: 2,
-    name: '아메리카노(HOT)',
-    price: 4000,
-    description: '따뜻하고 진한 핫 아메리카노',
-    image: '/americano-hot.jpg'
-  },
-  {
-    id: 3,
-    name: '카페라떼',
-    price: 5000,
-    description: '부드럽고 고소한 카페라떼',
-    image: '/caffe-latte.jpg'
-  },
-  {
-    id: 4,
-    name: '카푸치노',
-    price: 5000,
-    description: '우유 거품이 올라간 카푸치노',
-    image: '/caffe-latte.jpg' // 임시 이미지
-  },
-  {
-    id: 5,
-    name: '에스프레소',
-    price: 3500,
-    description: '진한 에스프레소',
-    image: '/americano-hot.jpg' // 임시 이미지
-  },
-  {
-    id: 6,
-    name: '바닐라라떼',
-    price: 5500,
-    description: '바닐라 시럽이 들어간 달콤한 라떼',
-    image: '/caffe-latte.jpg' // 임시 이미지
-  }
-];
 
 function OrderPage() {
   const [cart, setCart] = useState([]);
+  const [menuData, setMenuData] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  // 메뉴 데이터 로드
+  useEffect(() => {
+    loadMenus();
+  }, []);
+
+  const loadMenus = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const menus = await menuAPI.getAll();
+      setMenuData(menus);
+    } catch (err) {
+      console.error('메뉴 로드 오류:', err);
+      setError('메뉴를 불러오는데 실패했습니다.');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const addToCart = (item) => {
     // 같은 메뉴와 옵션 조합이 이미 장바구니에 있는지 확인
@@ -80,36 +56,47 @@ function OrderPage() {
     }
   };
 
-  const handleOrder = () => {
+  const handleOrder = async () => {
     if (cart.length === 0) {
       alert('장바구니가 비어있습니다.');
       return;
     }
 
-    // 주문 데이터 생성
-    const totalAmount = cart.reduce((sum, item) => sum + item.totalPrice, 0);
-    const order = {
-      items: cart.map(item => ({
+    try {
+      // 주문 데이터 생성
+      const totalAmount = cart.reduce((sum, item) => sum + item.totalPrice, 0);
+      const orderItems = cart.map(item => ({
         menuId: item.menuId,
         name: item.name,
         quantity: item.quantity,
         price: item.basePrice,
         options: item.options,
-      })),
-      totalAmount: totalAmount,
-    };
+      }));
 
-    // 주문 저장
-    const savedOrder = orderStorage.add(order);
-    
-    if (savedOrder) {
+      // API를 통해 주문 생성
+      const result = await orderAPI.create(orderItems, totalAmount);
+      
       alert(`주문이 완료되었습니다!\n총 금액: ${totalAmount.toLocaleString()}원`);
       // 장바구니 비우기
       setCart([]);
-    } else {
-      alert('주문 저장에 실패했습니다. 다시 시도해주세요.');
+    } catch (err) {
+      console.error('주문 생성 오류:', err);
+      alert(`주문에 실패했습니다: ${err.message}`);
     }
   };
+
+  if (loading) {
+    return <div className="order-page">메뉴를 불러오는 중...</div>;
+  }
+
+  if (error) {
+    return (
+      <div className="order-page">
+        <div style={{ color: 'red', padding: '2rem' }}>{error}</div>
+        <button onClick={loadMenus}>다시 시도</button>
+      </div>
+    );
+  }
 
   return (
     <div className="order-page">

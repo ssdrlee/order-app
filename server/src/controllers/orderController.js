@@ -30,7 +30,10 @@ export const createOrder = async (req, res, next) => {
     
     res.status(201).json({
       success: true,
-      orderId,
+      data: {
+        orderId,
+        totalAmount
+      },
       message: '주문이 성공적으로 생성되었습니다.'
     });
   } catch (error) {

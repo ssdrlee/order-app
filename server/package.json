@@ -10,7 +10,8 @@
     "db:create": "node database/check-db.js",
     "db:init": "node database/init.js",
     "db:test": "node database/test-connection.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "node test-api.js",
+    "test:api": "node test-api.js"
   },
   "keywords": [
     "express",

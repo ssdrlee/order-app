@@ -95,24 +95,38 @@ export const updateOrderStatus = async (req, res, next) => {
       });
     }
     
-    const updatedOrder = await updateOrderStatusInDB(orderId, status);
-    
-    if (!updatedOrder) {
-      return res.status(404).json({
-        success: false,
-        error: {
-          code: 'ERR-202',
-          message: '주문을 찾을 수 없습니다.'
-        }
+    try {
+      const updatedOrder = await updateOrderStatusInDB(orderId, status);
+      
+      if (!updatedOrder) {
+        return res.status(404).json({
+          success: false,
+          error: {
+            code: 'ERR-202',
+            message: '주문을 찾을 수 없습니다.'
+          }
+        });
+      }
+      
+      res.json({
+        success: true,
+        orderId: parseInt(orderId),
+        status: updatedOrder.status,
+        message: '주문 상태가 업데이트되었습니다.'
       });
+    } catch (dbError) {
+      // 재고 부족 에러 처리
+      if (dbError.message.includes('재고가 부족')) {
+        return res.status(409).json({
+          success: false,
+          error: {
+            code: 'ERR-206',
+            message: dbError.message
+          }
+        });
+      }
+      throw dbError;
     }
-    
-    res.json({
-      success: true,
-      orderId: parseInt(orderId),
-      status: updatedOrder.status,
-      message: '주문 상태가 업데이트되었습니다.'
-    });
   } catch (error) {
     next(error);
   }

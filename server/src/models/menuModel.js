@@ -2,37 +2,28 @@ import { query } from '../config/database.js';
 
 // 모든 메뉴 목록 조회
 export const getMenusFromDB = async () => {
-  // TODO: 데이터베이스 연결 후 구현
-  // 현재는 더미 데이터 반환
-  return [
-    {
-      id: 1,
-      name: '아메리카노(ICE)',
-      description: '시원하고 깔끔한 아이스 아메리카노',
-      price: 4000,
-      image: '/images/americano-ice.jpg'
-    },
-    {
-      id: 2,
-      name: '아메리카노(HOT)',
-      description: '따뜻하고 진한 핫 아메리카노',
-      price: 4000,
-      image: '/images/americano-hot.jpg'
-    },
-    {
-      id: 3,
-      name: '카페라떼',
-      description: '부드럽고 고소한 카페라떼',
-      price: 5000,
-      image: '/images/caffe-latte.jpg'
-    }
-  ];
+  try {
+    const result = await query(
+      'SELECT id, name, description, price, image, stock FROM menus ORDER BY id'
+    );
+    return result.rows;
+  } catch (error) {
+    console.error('메뉴 목록 조회 오류:', error);
+    throw error;
+  }
 };
 
 // 특정 메뉴 조회
 export const getMenuByIdFromDB = async (id) => {
-  // TODO: 데이터베이스 연결 후 구현
-  const menus = await getMenusFromDB();
-  return menus.find(menu => menu.id === parseInt(id));
+  try {
+    const result = await query(
+      'SELECT id, name, description, price, image, stock FROM menus WHERE id = $1',
+      [id]
+    );
+    return result.rows[0] || null;
+  } catch (error) {
+    console.error('메뉴 조회 오류:', error);
+    throw error;
+  }
 };
 

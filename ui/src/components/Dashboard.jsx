@@ -1,16 +1,7 @@
-import { useMemo } from 'react';
 import '../styles/Dashboard.css';
 
-function Dashboard({ orders }) {
-  // 주문 통계 계산 (useMemo로 최적화)
-  const stats = useMemo(() => {
-    return {
-      total: orders.length,
-      received: orders.filter(order => order.status === '주문 접수').length,
-      inProgress: orders.filter(order => order.status === '제조 중').length,
-      completed: orders.filter(order => order.status === '제조 완료').length,
-    };
-  }, [orders]);
+function Dashboard({ stats }) {
+  // stats prop을 직접 사용 (이미 백엔드에서 계산된 통계)
 
   return (
     <div className="dashboard">
