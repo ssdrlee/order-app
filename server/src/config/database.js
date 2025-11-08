@@ -15,6 +15,10 @@ const pool = new Pool({
   max: 20, // 최대 연결 수
   idleTimeoutMillis: 30000,
   connectionTimeoutMillis: 2000,
+  // Render 등의 클라우드 데이터베이스는 SSL 연결이 필요할 수 있음
+  ssl: process.env.DB_SSL === 'true' 
+    ? { rejectUnauthorized: false } 
+    : false,
 });
 
 // 연결 에러 핸들러

@@ -23,3 +23,11 @@ dist-ssr
 *.sln
 *.sw?
 
+# Environment variables
+.env
+.env.local
+.env.*.local
+# .env.development은 로컬 개발용이므로 Git에 커밋하지 않음
+.env.development
+# .env.production은 실제 값이 들어갈 수 있으므로 Git에 커밋하지 않음
+.env.production

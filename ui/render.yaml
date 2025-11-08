@@ -1,12 +1,18 @@
 # Render Static Site 배포 설정
 # 프런트엔드는 Static Site로 배포
+# 
+# 사용 방법:
+# 1. Render 대시보드에서 "New Static Site" 선택
+# 2. GitHub 저장소 연결
+# 3. Root Directory를 "ui"로 설정
+# 4. Build Command: npm install && npm run build
+# 5. Publish Directory: dist
+# 6. 환경 변수에서 VITE_API_URL 설정 (백엔드 URL)
 
 static_sites:
   - name: coffee-order-app
     buildCommand: npm install && npm run build
     publishPath: ./dist
-    envVars:
-      - key: VITE_API_URL
-        value: https://coffee-order-api.onrender.com/api
-        # 실제 배포된 백엔드 URL로 변경 필요
+    # 환경 변수는 Render 대시보드에서 설정해야 함
+    # VITE_API_URL=https://your-backend-service.onrender.com/api
 
