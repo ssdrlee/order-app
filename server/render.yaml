@@ -1,0 +1,36 @@
+# Render 배포 설정 파일
+# https://render.com/docs/infrastructure-as-code
+
+services:
+  # 백엔드 API 서비스
+  - type: web
+    name: coffee-order-api
+    env: node
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      # 데이터베이스 연결 정보는 Render 대시보드에서 설정
+      # 또는 PostgreSQL 서비스의 Internal Database URL 사용
+      - key: DB_HOST
+        sync: false  # 수동으로 설정
+      - key: DB_PORT
+        value: 5432
+      - key: DB_NAME
+        sync: false  # 수동으로 설정
+      - key: DB_USER
+        sync: false  # 수동으로 설정
+      - key: DB_PASSWORD
+        sync: false  # 수동으로 설정 (또는 secret 파일 사용)
+
+databases:
+  # PostgreSQL 데이터베이스
+  - name: coffee-order-db
+    databaseName: coffee_order_db
+    user: coffee_user
+    plan: free
+

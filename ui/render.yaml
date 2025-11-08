@@ -1,0 +1,12 @@
+# Render Static Site 배포 설정
+# 프런트엔드는 Static Site로 배포
+
+static_sites:
+  - name: coffee-order-app
+    buildCommand: npm install && npm run build
+    publishPath: ./dist
+    envVars:
+      - key: VITE_API_URL
+        value: https://coffee-order-api.onrender.com/api
+        # 실제 배포된 백엔드 URL로 변경 필요
+

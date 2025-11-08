@@ -13,7 +13,17 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 
 // 미들웨어
-app.use(cors());
+// CORS 설정 (프로덕션 환경에서 프런트엔드 도메인 허용)
+const corsOptions = {
+  origin: process.env.NODE_ENV === 'production' 
+    ? [
+        'https://coffee-order-app.onrender.com',
+        process.env.FRONTEND_URL // 환경 변수로 설정 가능
+      ].filter(Boolean)
+    : ['http://localhost:3000', 'http://localhost:5173'], // 개발 환경
+  credentials: true
+};
+app.use(cors(corsOptions));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
