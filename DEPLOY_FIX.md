@@ -24,19 +24,31 @@ Render.com에서 프론트엔드 빌드 시 환경 변수가 제대로 설정되
 2. Render.com에서 백엔드 서비스 재배포
    - Render 대시보드 → 백엔드 서비스 → Manual Deploy → Clear build cache & deploy
 
-### Step 2: 프론트엔드 환경 변수 확인
+### Step 2: 프론트엔드 환경 변수 설정 (중요!)
 
-Render.com 대시보드에서 프론트엔드 서비스 설정 확인:
+**문제**: 콘솔 에러를 보면 프론트엔드가 `http://localhost:5000/api/menus`로 요청하고 있습니다.
+이는 Render.com에서 `VITE_API_URL` 환경 변수가 설정되지 않았거나, 빌드 시점에 주입되지 않았다는 의미입니다.
 
-1. **Environment Variables** 섹션 확인
-   - Key: `VITE_API_URL`
-   - Value: `https://order-app-backend-jic0.onrender.com/api`
+**해결 방법**:
 
-2. 환경 변수가 없거나 잘못 설정된 경우:
-   - "Add Environment Variable" 클릭
-   - Key: `VITE_API_URL`
-   - Value: `https://order-app-backend-jic0.onrender.com/api`
-   - 저장 후 재배포
+1. **Render.com 대시보드 접속**
+   - https://dashboard.render.com
+   - 프론트엔드 서비스 (`order-app-frontend-yrru`) 선택
+
+2. **Environment 섹션으로 이동**
+   - 왼쪽 사이드바에서 "Environment" 클릭
+   - 또는 서비스 설정에서 "Environment" 탭 클릭
+
+3. **환경 변수 추가**
+   - "Add Environment Variable" 버튼 클릭
+   - **Key**: `VITE_API_URL`
+   - **Value**: `https://order-app-backend-jic0.onrender.com/api`
+   - "Save Changes" 클릭
+
+4. **반드시 재배포 필요!**
+   - 환경 변수만 추가해도 자동 재배포가 되지 않을 수 있습니다
+   - "Manual Deploy" → "Clear build cache & deploy" 실행
+   - Vite 환경 변수는 **빌드 시점**에 주입되므로 재배포 필수!
 
 ### Step 3: 재배포
 

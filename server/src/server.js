@@ -55,6 +55,32 @@ app.use((req, res) => {
 // 에러 핸들러
 app.use((err, req, res, next) => {
   console.error('에러 발생:', err);
+  console.error('에러 스택:', err.stack);
+  
+  // 데이터베이스 관련 오류 처리
+  if (err.code === 'ECONNREFUSED' || err.code === 'ENOTFOUND') {
+    return res.status(500).json({
+      success: false,
+      error: {
+        code: 'DATABASE_CONNECTION_ERROR',
+        message: '데이터베이스에 연결할 수 없습니다.',
+        details: process.env.NODE_ENV === 'development' ? err.message : undefined
+      }
+    });
+  }
+  
+  // 테이블이 존재하지 않는 경우
+  if (err.code === '42P01') {
+    return res.status(500).json({
+      success: false,
+      error: {
+        code: 'DATABASE_TABLE_NOT_FOUND',
+        message: '데이터베이스 테이블을 찾을 수 없습니다. 데이터베이스를 초기화해주세요.',
+        details: process.env.NODE_ENV === 'development' ? err.message : undefined
+      }
+    });
+  }
+  
   res.status(err.status || 500).json({
     success: false,
     error: {
@@ -72,9 +98,11 @@ const testDatabaseConnection = async () => {
     await client.query('SELECT 1');
     client.release();
     console.log('✓ 데이터베이스 연결 성공');
+    return true;
   } catch (error) {
     console.error('✗ 데이터베이스 연결 실패:', error.message);
     console.error('  데이터베이스 설정을 확인하고 `npm run db:init`을 실행하세요.');
+    return false;
   }
 };
 
@@ -83,7 +111,20 @@ app.listen(PORT, async () => {
   console.log(`서버가 포트 ${PORT}에서 실행 중입니다.`);
   console.log(`환경: ${process.env.NODE_ENV || 'development'}`);
   console.log('');
-  await testDatabaseConnection();
+  
+  // 데이터베이스 연결 테스트
+  const connected = await testDatabaseConnection();
+  
+  // 데이터베이스 연결이 성공했고, 프로덕션 환경이면 자동 초기화 시도
+  if (connected && process.env.NODE_ENV === 'production') {
+    try {
+      const { checkAndInitDatabase } = await import('./database/autoInit.js');
+      await checkAndInitDatabase();
+    } catch (error) {
+      console.error('자동 초기화 모듈 로드 실패:', error.message);
+      console.error('로컬에서 수동으로 초기화를 실행하세요: npm run db:init-render');
+    }
+  }
 });
 
 export default app;
