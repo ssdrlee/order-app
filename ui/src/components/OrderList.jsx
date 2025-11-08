@@ -1,6 +1,8 @@
+import { useState } from 'react';
 import '../styles/OrderList.css';
 
 function OrderList({ orders, inventory, onStatusChange, onInventoryUpdate }) {
+  const [errorMessage, setErrorMessage] = useState('');
   const formatDate = (dateString) => {
     const date = new Date(dateString);
     const month = date.getMonth() + 1;
@@ -26,12 +28,28 @@ function OrderList({ orders, inventory, onStatusChange, onInventoryUpdate }) {
   };
 
   const handleStatusChange = (orderId, newStatus) => {
-    // 제조 시작 시 재고 차감
+    setErrorMessage(''); // 에러 메시지 초기화
+    
+    // 제조 시작 시 재고 확인 및 차감
     if (newStatus === '제조 중') {
       const order = orders.find(o => o.id === orderId);
       if (order && order.items) {
+        // 재고 부족 여부 확인
+        const insufficientItems = [];
         order.items.forEach(item => {
-          // 재고 차감
+          const currentStock = inventory.find(inv => inv.menuId === item.menuId);
+          if (!currentStock || currentStock.stock < item.quantity) {
+            insufficientItems.push(item.name);
+          }
+        });
+
+        if (insufficientItems.length > 0) {
+          setErrorMessage(`재고가 부족합니다: ${insufficientItems.join(', ')}`);
+          return; // 재고가 부족하면 상태 변경하지 않음
+        }
+
+        // 재고 차감
+        order.items.forEach(item => {
           const currentStock = inventory.find(inv => inv.menuId === item.menuId);
           if (currentStock) {
             const newStock = Math.max(0, currentStock.stock - item.quantity);
@@ -86,6 +104,9 @@ function OrderList({ orders, inventory, onStatusChange, onInventoryUpdate }) {
   return (
     <div className="order-list">
       <h2 className="order-list-title">주문 현황</h2>
+      {errorMessage && (
+        <div className="error-message">{errorMessage}</div>
+      )}
       <div className="order-items">
         {orders.map(order => (
           <div key={order.id} className="order-item">

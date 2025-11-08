@@ -6,26 +6,56 @@ const STORAGE_KEYS = {
   INVENTORY: 'cozy_inventory',
 };
 
+// 고유 ID 생성 (중복 방지)
+const generateId = () => {
+  return `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+};
+
+// localStorage 에러 처리 헬퍼
+const safeGetItem = (key, defaultValue = []) => {
+  try {
+    const data = localStorage.getItem(key);
+    if (!data) return defaultValue;
+    return JSON.parse(data);
+  } catch (error) {
+    console.error(`Error reading ${key} from localStorage:`, error);
+    return defaultValue;
+  }
+};
+
+const safeSetItem = (key, value) => {
+  try {
+    localStorage.setItem(key, JSON.stringify(value));
+    return true;
+  } catch (error) {
+    console.error(`Error writing ${key} to localStorage:`, error);
+    // localStorage 용량 초과 등의 경우 처리
+    if (error.name === 'QuotaExceededError') {
+      alert('저장 공간이 부족합니다. 일부 데이터를 삭제해주세요.');
+    }
+    return false;
+  }
+};
+
 // 주문 데이터 관리
 export const orderStorage = {
   // 모든 주문 조회
   getAll: () => {
-    const data = localStorage.getItem(STORAGE_KEYS.ORDERS);
-    return data ? JSON.parse(data) : [];
+    return safeGetItem(STORAGE_KEYS.ORDERS, []);
   },
 
   // 주문 추가
   add: (order) => {
     const orders = orderStorage.getAll();
     const newOrder = {
-      id: Date.now(),
+      id: generateId(), // 고유 ID 생성
       ...order,
       status: '주문 접수',
       orderDate: new Date().toISOString(),
     };
     orders.unshift(newOrder); // 최신 주문이 앞에 오도록
-    localStorage.setItem(STORAGE_KEYS.ORDERS, JSON.stringify(orders));
-    return newOrder;
+    const success = safeSetItem(STORAGE_KEYS.ORDERS, orders);
+    return success ? newOrder : null;
   },
 
   // 주문 상태 업데이트
@@ -34,14 +64,14 @@ export const orderStorage = {
     const updatedOrders = orders.map(order =>
       order.id === orderId ? { ...order, status } : order
     );
-    localStorage.setItem(STORAGE_KEYS.ORDERS, JSON.stringify(updatedOrders));
+    return safeSetItem(STORAGE_KEYS.ORDERS, updatedOrders);
   },
 
   // 주문 삭제 (선택 사항)
   remove: (orderId) => {
     const orders = orderStorage.getAll();
     const filteredOrders = orders.filter(order => order.id !== orderId);
-    localStorage.setItem(STORAGE_KEYS.ORDERS, JSON.stringify(filteredOrders));
+    return safeSetItem(STORAGE_KEYS.ORDERS, filteredOrders);
   },
 };
 
@@ -49,9 +79,9 @@ export const orderStorage = {
 export const inventoryStorage = {
   // 모든 재고 조회
   getAll: () => {
-    const data = localStorage.getItem(STORAGE_KEYS.INVENTORY);
-    if (data) {
-      return JSON.parse(data);
+    const data = safeGetItem(STORAGE_KEYS.INVENTORY);
+    if (data && data.length > 0) {
+      return data;
     }
     // 초기 재고 데이터
     const initialInventory = [
@@ -59,7 +89,7 @@ export const inventoryStorage = {
       { menuId: 2, name: '아메리카노(HOT)', stock: 10 },
       { menuId: 3, name: '카페라떼', stock: 10 },
     ];
-    localStorage.setItem(STORAGE_KEYS.INVENTORY, JSON.stringify(initialInventory));
+    safeSetItem(STORAGE_KEYS.INVENTORY, initialInventory);
     return initialInventory;
   },
 
@@ -67,10 +97,16 @@ export const inventoryStorage = {
   update: (menuId, stock) => {
     const inventory = inventoryStorage.getAll();
     const updatedInventory = inventory.map(item =>
-      item.menuId === menuId ? { ...item, stock } : item
+      item.menuId === menuId ? { ...item, stock: Math.max(0, stock) } : item
     );
-    localStorage.setItem(STORAGE_KEYS.INVENTORY, JSON.stringify(updatedInventory));
+    safeSetItem(STORAGE_KEYS.INVENTORY, updatedInventory);
     return updatedInventory;
+  },
+
+  // 재고 조회 (단일 메뉴)
+  get: (menuId) => {
+    const inventory = inventoryStorage.getAll();
+    return inventory.find(item => item.menuId === menuId);
   },
 
   // 재고 증가

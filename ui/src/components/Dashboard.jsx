@@ -1,13 +1,16 @@
+import { useMemo } from 'react';
 import '../styles/Dashboard.css';
 
 function Dashboard({ orders }) {
-  // 주문 통계 계산
-  const stats = {
-    total: orders.length,
-    received: orders.filter(order => order.status === '주문 접수').length,
-    inProgress: orders.filter(order => order.status === '제조 중').length,
-    completed: orders.filter(order => order.status === '제조 완료').length,
-  };
+  // 주문 통계 계산 (useMemo로 최적화)
+  const stats = useMemo(() => {
+    return {
+      total: orders.length,
+      received: orders.filter(order => order.status === '주문 접수').length,
+      inProgress: orders.filter(order => order.status === '제조 중').length,
+      completed: orders.filter(order => order.status === '제조 완료').length,
+    };
+  }, [orders]);
 
   return (
     <div className="dashboard">

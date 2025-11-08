@@ -14,9 +14,10 @@ function AdminPage() {
     loadData();
     
     // 주기적으로 데이터 새로고침 (실제로는 WebSocket이나 폴링 사용)
+    // 5초마다 새로고침으로 변경 (성능 개선)
     const interval = setInterval(() => {
       loadData();
-    }, 1000); // 1초마다 새로고침
+    }, 5000); // 5초마다 새로고침
 
     return () => clearInterval(interval);
   }, []);

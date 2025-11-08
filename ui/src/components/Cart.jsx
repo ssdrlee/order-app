@@ -24,13 +24,17 @@ function Cart({ cartItems, onOrder }) {
         <div className="cart-content">
           <div className="cart-items-section">
             <div className="cart-items">
-              {cartItems.map((item, index) => (
-                <div key={index} className="cart-item">
-                  <span className="cart-item-name">{formatItemName(item)}</span>
-                  <span className="cart-item-quantity">X {item.quantity}</span>
-                  <span className="cart-item-price">{item.totalPrice.toLocaleString()}원</span>
-                </div>
-              ))}
+              {cartItems.map((item) => {
+                // 고유 key 생성: menuId + 옵션 조합
+                const uniqueKey = `${item.menuId}-${item.options.shot ? 'shot' : ''}-${item.options.syrup ? 'syrup' : ''}`;
+                return (
+                  <div key={uniqueKey} className="cart-item">
+                    <span className="cart-item-name">{formatItemName(item)}</span>
+                    <span className="cart-item-quantity">X {item.quantity}</span>
+                    <span className="cart-item-price">{item.totalPrice.toLocaleString()}원</span>
+                  </div>
+                );
+              })}
             </div>
           </div>
           

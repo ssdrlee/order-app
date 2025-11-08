@@ -1,18 +1,19 @@
 import { useState } from 'react';
 import '../styles/MenuCard.css';
 
+// 상수 정의 (매직 넘버 제거)
+const SHOT_PRICE = 500;
+const SYRUP_PRICE = 0;
+
 function MenuCard({ menu, onAddToCart }) {
   const [shotAdded, setShotAdded] = useState(false);
   const [syrupAdded, setSyrupAdded] = useState(false);
   const [imageError, setImageError] = useState(false);
-
-  const shotPrice = 500;
-  const syrupPrice = 0;
   
   const calculatePrice = () => {
     let total = menu.price;
-    if (shotAdded) total += shotPrice;
-    if (syrupAdded) total += syrupPrice;
+    if (shotAdded) total += SHOT_PRICE;
+    if (syrupAdded) total += SYRUP_PRICE;
     return total;
   };
 
@@ -61,7 +62,7 @@ function MenuCard({ menu, onAddToCart }) {
               checked={shotAdded}
               onChange={(e) => setShotAdded(e.target.checked)}
             />
-            <span>샷 추가 (+{shotPrice.toLocaleString()}원)</span>
+            <span>샷 추가 (+{SHOT_PRICE.toLocaleString()}원)</span>
           </label>
           <label className="option-label">
             <input
@@ -69,7 +70,7 @@ function MenuCard({ menu, onAddToCart }) {
               checked={syrupAdded}
               onChange={(e) => setSyrupAdded(e.target.checked)}
             />
-            <span>시럽 추가 (+{syrupPrice.toLocaleString()}원)</span>
+            <span>시럽 추가 (+{SYRUP_PRICE.toLocaleString()}원)</span>
           </label>
         </div>
         

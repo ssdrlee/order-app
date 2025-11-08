@@ -68,8 +68,9 @@ function OrderPage() {
       const existingItem = updatedCart[existingItemIndex];
       existingItem.quantity += 1;
       // 개별 가격 재계산: (기본 가격 + 옵션 가격) * 수량
+      const SHOT_PRICE = 500;
       const unitPrice = existingItem.basePrice + 
-        (existingItem.options.shot ? 500 : 0) + 
+        (existingItem.options.shot ? SHOT_PRICE : 0) + 
         (existingItem.options.syrup ? 0 : 0);
       existingItem.totalPrice = unitPrice * existingItem.quantity;
       setCart(updatedCart);
@@ -99,12 +100,15 @@ function OrderPage() {
     };
 
     // 주문 저장
-    orderStorage.add(order);
+    const savedOrder = orderStorage.add(order);
     
-    alert(`주문이 완료되었습니다!\n총 금액: ${totalAmount.toLocaleString()}원`);
-    
-    // 장바구니 비우기
-    setCart([]);
+    if (savedOrder) {
+      alert(`주문이 완료되었습니다!\n총 금액: ${totalAmount.toLocaleString()}원`);
+      // 장바구니 비우기
+      setCart([]);
+    } else {
+      alert('주문 저장에 실패했습니다. 다시 시도해주세요.');
+    }
   };
 
   return (
