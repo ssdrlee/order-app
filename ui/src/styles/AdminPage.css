@@ -1,0 +1,41 @@
+.admin-page {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.dashboard-section {
+  margin-bottom: 2rem;
+}
+
+.inventory-section {
+  margin-bottom: 2rem;
+}
+
+.section-title {
+  font-size: 1.8rem;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 1.5rem;
+}
+
+.inventory-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1.5rem;
+}
+
+.order-section {
+  margin-bottom: 2rem;
+}
+
+@media (max-width: 768px) {
+  .admin-page {
+    padding: 1rem;
+  }
+
+  .inventory-grid {
+    grid-template-columns: 1fr;
+  }
+}
+

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import MenuCard from '../components/MenuCard';
 import Cart from '../components/Cart';
+import { orderStorage } from '../utils/storage';
 import '../styles/OrderPage.css';
 
 // 메뉴 데이터
@@ -84,8 +85,22 @@ function OrderPage() {
       return;
     }
 
-    // TODO: 서버로 주문 전송
+    // 주문 데이터 생성
     const totalAmount = cart.reduce((sum, item) => sum + item.totalPrice, 0);
+    const order = {
+      items: cart.map(item => ({
+        menuId: item.menuId,
+        name: item.name,
+        quantity: item.quantity,
+        price: item.basePrice,
+        options: item.options,
+      })),
+      totalAmount: totalAmount,
+    };
+
+    // 주문 저장
+    orderStorage.add(order);
+    
     alert(`주문이 완료되었습니다!\n총 금액: ${totalAmount.toLocaleString()}원`);
     
     // 장바구니 비우기

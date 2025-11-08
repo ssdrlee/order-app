@@ -1,0 +1,108 @@
+.inventory-card {
+  background-color: #ffffff;
+  border: 2px solid #bdbdbd;
+  border-radius: 8px;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  min-width: 200px;
+}
+
+.inventory-menu-name {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #333;
+  margin: 0;
+  text-align: center;
+}
+
+.inventory-stock-info {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.inventory-stock {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #1976d2;
+}
+
+.inventory-status {
+  padding: 0.25rem 0.75rem;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.inventory-status.status-normal {
+  background-color: #4caf50;
+  color: #ffffff;
+}
+
+.inventory-status.status-warning {
+  background-color: #ff9800;
+  color: #ffffff;
+}
+
+.inventory-status.status-out-of-stock {
+  background-color: #f44336;
+  color: #ffffff;
+}
+
+.inventory-controls {
+  display: flex;
+  gap: 1rem;
+  width: 100%;
+  justify-content: center;
+}
+
+.inventory-button {
+  width: 40px;
+  height: 40px;
+  font-size: 1.5rem;
+  font-weight: bold;
+  border: 2px solid #1976d2;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.inventory-button.increase-button {
+  background-color: #ffffff;
+  color: #1976d2;
+}
+
+.inventory-button.increase-button:hover {
+  background-color: #1976d2;
+  color: #ffffff;
+}
+
+.inventory-button.decrease-button {
+  background-color: #ffffff;
+  color: #1976d2;
+}
+
+.inventory-button.decrease-button:hover:not(:disabled) {
+  background-color: #1976d2;
+  color: #ffffff;
+}
+
+.inventory-button:disabled {
+  background-color: #e0e0e0;
+  color: #999;
+  border-color: #e0e0e0;
+  cursor: not-allowed;
+}
+
+.inventory-button:active:not(:disabled) {
+  transform: scale(0.95);
+}
+
